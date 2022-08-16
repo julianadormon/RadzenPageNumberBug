@@ -1,8 +1,59 @@
 ﻿@page "/"
+@using Radzen
+@using Radzen.Blazor
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+<RadzenDataGrid Style="height: 500px"
+                AllowFiltering="false"
+                AllowPaging="true"
+                PageSizeOptions="@pageSizeOptions"
+                ShowPagingSummary="true"
+                PagingSummaryFormat="@pagingSummaryFormat"
+                Data="@customerVms"
+                TItem="CustomerVm"
+                SelectionMode="DataGridSelectionMode.Single">
+    <Columns>
+        <RadzenDataGridColumn TItem="CustomerVm" Property="FirstName" Title="FirstName" />
+    </Columns>
+</RadzenDataGrid>
+
+
+@code{
+
+    public List<CustomerVm> customers = new List<CustomerVm>();
+    IEnumerable<CustomerVm> customerVms;
+
+    IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30, 40, 50 };
+    string pagingSummaryFormat = "On page {0} of {1} (total {2} records)";
+
+    protected override void OnInitialized()
+    {
+            int x = 50;
+            while(x > 0)
+            {
+                x--;
+                CustomerVm cus = new CustomerVm() { FirstName = get8CharacterRandomString() };
+                customers.Add(cus);
+            }
+
+            customerVms = customers.AsQueryable();
+        }
+    
+    public class CustomerVm
+    {
+        public string FirstName { get; set; }
+    }
+
+    public static string get8CharacterRandomString()
+    {
+        string path = Path.GetRandomFileName();
+        path = path.Replace(".", ""); // Remove period.
+        return path.Substring(0, 8);  // Return 8 character string
+    }
+}
 
